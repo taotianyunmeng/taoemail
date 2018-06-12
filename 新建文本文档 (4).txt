@@ -1,0 +1,31 @@
+           tring[] imghttp;
+            for (int i = 0; i < num; i++)
+            {
+                string content = listBox2.Items[i].ToString();
+                Regex reg=new Regex(@"<img.*?src=""(?<src>[^""]*)""[^>]*>", RegexOptions.IgnoreCase);
+                MatchCollection mc = reg.Matches(content);        
+                foreach (Match m in mc)
+                {
+                    try
+                    {
+                        
+                       imghttp=new string[mc.Count];
+                       imghttp[i] = m.Groups["src"].Value;
+                       string sqlconn = "Data Source=192.168.0.107;User ID=sa;Password=zLKd0q1rH8MwL2h8gsQwFWKOUbAbdz5ylOvgBkxE3XOWaJMyFMVme4zQRBRXorp809kwDj6SujYG51reOg0w2QnBnuJr6evXWvzgZD;";
+                       SqlConnection conn=new SqlConnection(sqlconn);
+                       string sql = "CREATE DATABASE db123;" +
+                                    "CREATE TABLE imgsrc12(imgID int,imgsrc varchar)";
+
+                       SqlCommand com=new SqlCommand(sql,conn);
+                       conn.Open();
+                       com.Connection = conn;
+                    
+                     
+                       conn.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                   
+                }

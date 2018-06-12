@@ -1,0 +1,31 @@
+DrawingVisual visual=new DrawingVisual();
+DrawingContext dc=visual.RenderOpen();
+dc.DrawLine();
+dc.DrawRectangle();
+dc.DrawRoundRectangle();
+dc.DrawEllipse();
+dc.DrawGeometry();
+DrawText();dc.DrawImage();
+dc.Close();
+
+
+DrawingVisual visual=new DrawingVisual();
+using(DrawingContext dc=visual.RenderOpen())
+{
+   Pen drawingPen=new Pen(Brushes.Black,3);
+   dc.DrawingLine(drawingPen,new Point(0,50),new Point(50,0));
+   dc.DrawingLine(drawingPen,new Point(50,0),new Point(100,50));
+   dc.DrawingLine(drawingPen,new Point(0,50),new Point(100,50));
+ }
+
+AddVisualChild()  和 AddLogicalChild()  
+VisualChildrenCount
+GetVisualChild()
+
+
+
+新文件 存储库：
+   GitHud --taoyunmeng
+ SSH:         git@github.com:taotianyunmeng/taoyunmeng.git
+ Https:       https://github.com/taotianyunmeng/taoyunmeng.git
+

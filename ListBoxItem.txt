@@ -1,0 +1,323 @@
+     <Style TargetType="{x:Type ListBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Border Name="Border"  BorderThickness="1" CornerRadius="3"
+                        BorderBrush="{StaticResource StandardBorderBrush}" 
+                        Background="{StaticResource ListBoxBackgroundBrush}">
+                        <ScrollViewer Focusable="False">
+                            <ItemsPresenter Margin="2"></ItemsPresenter>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter >
+    </Style>
+
+    <Style TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border Name="Border" Padding="1" CornerRadius="3"
+                        SnapsToDevicePixels="True" BorderThickness="2" >
+                        <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="ListBoxItem.MouseEnter">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="FontSize" To="20"
+                                                         Duration="0:0:1"></DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="ListBoxItem.MouseLeave">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="FontSize"
+                                              BeginTime="0:0:0.5" Duration="0:0:0.2"></DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource 
+                                HoverBorderBrush}"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Border" Property="TextBlock.Foreground" Value="{StaticResource
+                                SelectedForegroundBrush}"></Setter>
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource
+                                SelectedBackgroundBrush}"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter >
+    </Style>
+
+
+
+
+
+
+
+
+
+ public static DependencyProperty ColorProperty;
+        public static DependencyProperty RedProperty;
+        public static DependencyProperty GreenProperty;
+        public static DependencyProperty BlueProperty;
+
+        static ColorPickerUserContlols()
+        {
+            ColorProperty = DependencyProperty.Register("Color", typeof(Color),
+              typeof(ColorPickerUserContlols), new FrameworkPropertyMetadata(Colors.Black,
+              new PropertyChangedCallback(OnColorChanged)));
+            RedProperty = DependencyProperty.Register("Red", typeof(byte),
+              typeof(ColorPickerUserContlols), new FrameworkPropertyMetadata(Colors.Black,
+              new PropertyChangedCallback(OnColorRGBChanged)));
+            GreenProperty = DependencyProperty.Register("Green", typeof(byte),
+              typeof(ColorPickerUserContlols), new FrameworkPropertyMetadata(Colors.Black,
+              new PropertyChangedCallback(OnColorRGBChanged)));
+            BlueProperty = DependencyProperty.Register("Blue", typeof(byte),
+              typeof(ColorPickerUserContlols), new FrameworkPropertyMetadata(Colors.Black,
+              new PropertyChangedCallback(OnColorRGBChanged)));
+        }
+        private static void OnColorRGBChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            ColorPickerUserContlols colorPicker = (ColorPickerUserContlols)sender;
+            Color color = colorPicker.Color;
+            if (e.Property == RedProperty)
+                color.R = (byte)e.NewValue;
+            else if (e.Property == GreenProperty)
+                color.G = (byte)e.NewValue;
+            else if (e.Property == BlueProperty)
+                color.B = (byte)e.NewValue;
+            colorPicker.Color = color;
+
+        }
+        public Color Color
+        {
+            get { return (Color)GetValue(ColorProperty); }
+            set { SetValue(ColorProperty, value); }
+        }
+        public byte Red
+        {
+            get { return (byte)GetValue(RedProperty); }
+            set { SetValue(RedProperty, value); }
+        }
+        public byte Green
+        {
+            get { return (byte)GetValue(GreenProperty); }
+            set { SetValue(GreenProperty, value); }
+        }
+        public byte Blue
+        {
+            get { return (byte)GetValue(BlueProperty); }
+            set { SetValue(BlueProperty, value); }
+        }
+
+        private static void OnColorChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            ColorPickerUserContlols colorPicker = (ColorPickerUserContlols)sender;
+            Color oldColor = (Color)e.OldValue;
+            Color newColor = (Color)e.NewValue;
+
+            colorPicker.Red = newColor.R;
+            colorPicker.Green = newColor.G;
+            colorPicker.Blue = newColor.B;
+            colorPicker.OnColorChanged(oldColor, newColor);
+        }
+
+        public static readonly RoutedEvent ColorChangedEvent = EventManager.RegisterRoutedEvent
+            ("ColorChanged", RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler
+    <Color>),
+            typeof(ColorPickerUserContlols));
+
+        public event RoutedPropertyChangedEventHandler
+        <Color> ColorChanged
+        {
+            add { AddHandler(ColorChangedEvent, value); }
+            remove { RemoveHandler(ColorChangedEvent, value); }
+        }
+
+        private void OnColorChanged(Color oldValue, Color newValue)
+        {
+            RoutedPropertyChangedEventArgs
+            <Color> args = new
+            RoutedPropertyChangedEventArgs
+                <Color>(oldValue, newValue);
+            args.RoutedEvent = ColorPickerUserContlols.ColorChangedEvent;
+            RaiseEvent(args);
+        }
+
+
+
+
+ <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Slider Name="sliderRed" Grid.Row="0" Grid.Column="0"  Width="150" Minimum="0"
+                Maximum="255" Margin="{Binding ElementName=colorPicker,Path=Padding}"
+                Value="{Binding ElementName=colorPicker,Path=Red}" />
+
+        <Slider Name="sliderGreen" Grid.Row="1" Grid.Column="0" Width="150" Minimum="0"
+                Maximum="255" Margin="{Binding ElementName=colorPicker,Path=Padding}"
+                 Value="{Binding ElementName=colorPicker,Path=Green}" />
+
+        <Slider Name="sliderBlue" Grid.Row="2" Grid.Column="0" Width="150" Minimum="0"
+                Maximum="255" Margin="{Binding ElementName=colorPicker,Path=Padding}"
+                Value="{Binding ElementName=colorPicker,Path=Blue}" />
+
+        <Rectangle Name="Rectangle1" Width="80" Height="100" Stroke="Black" Grid.Column="1" Grid.RowSpan="3"
+                   Margin="{Binding ElementName=colorPicker,Path=Padding}" StrokeThickness="1"
+                  Grid.Row="0" >
+            <Rectangle.Fill>
+                <SolidColorBrush Color="{Binding ElementName=colorPicker,Path=Color}"></SolidColorBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+    </Grid>
+
+
+
+
+
+
+
+ <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Slider Grid.Row="0" Grid.Column="0" Name="sliderRed"  Value="{Binding ElementName=colorPicker,Path=Red}"
+                Margin="{Binding ElementName=colorPicker,Path=Padding}" Maximum="255" Minimum="0" Height="40"></Slider>
+        <Slider Grid.Row="1" Grid.Column="0" Name="sliderGreen"  Value="{Binding ElementName=colorPicker,Path=Green}"
+                Margin="{Binding ElementName=colorPicker,Path=Padding}" Maximum="255" Minimum="0" Height="40"></Slider>
+        <Slider Grid.Row="2" Grid.Column="0" Name="sliderBlue"  Value="{Binding ElementName=colorPicker,Path=Blue}"
+                Margin="{Binding ElementName=colorPicker,Path=Padding}" Maximum="255" Minimum="0" Height="40"></Slider>
+
+        <Rectangle Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Width="80" StrokeThickness="1"
+                  Margin="{Binding ElementName=colorPicker,Path=Padding}"   Stroke="Black" 
+                 >
+            <Rectangle.Fill>
+                <SolidColorBrush Color="{Binding ElementName=colorPicker,Path=Color}" ></SolidColorBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+
+
+
+  public static DependencyProperty ColorProperty;
+        public static DependencyProperty RedProperty;
+        public static DependencyProperty GreenProperty;
+        public static DependencyProperty BlueProperty;
+
+        static UserControl1()
+       {
+            ColorProperty = DependencyProperty.Register("Color",typeof(Color),typeof(UserControl1),
+             new FrameworkPropertyMetadata(Colors.Black,new PropertyChangedCallback(OnColorChanged)) );
+            RedProperty = DependencyProperty.Register("Red", typeof(Byte), typeof(UserControl1),
+             new FrameworkPropertyMetadata(Colors.Black, new PropertyChangedCallback(OnColorRGBChanged)));
+            GreenProperty = DependencyProperty.Register("Green", typeof(Byte), typeof(UserControl1),
+             new FrameworkPropertyMetadata(Colors.Black, new PropertyChangedCallback(OnColorRGBChanged)));
+            BlueProperty = DependencyProperty.Register("Blue", typeof(Byte), typeof(UserControl1),
+             new FrameworkPropertyMetadata(Colors.Black, new PropertyChangedCallback(OnColorRGBChanged)));
+        }
+        public Color Color
+        {
+            get { return (Color)GetValue(ColorProperty); }
+            set { SetValue(ColorProperty, value); }
+        }
+        public Color Red
+        {
+            get { return (Color)GetValue(RedProperty); }
+            set { SetValue(RedProperty, value); }
+        }
+        public Color Green
+        {
+            get { return (Color)GetValue(GreenProperty); }
+            set { SetValue(GreenProperty, value); }
+        }
+        public Color Blue
+        {
+            get { return (Color)GetValue(BlueProperty); }
+            set { SetValue(BlueProperty, value); }
+        }
+
+        private static void OnColorRGBChanged(DependencyObject sender,
+            DependencyPropertyChangedEventArgs e)
+        {
+            UserControl1 uscl1=(UserControl1)sender;
+            Color color = uscl1.Color;
+            if (e.Property == RedProperty)
+                color.R = (byte)e.NewValue;
+            else if (e.Property == GreenProperty)
+                color.G = (byte)e.NewValue;
+            else if (e.Property ==BlueProperty)
+                color.B = (byte)e.NewValue;
+            uscl1.Color = color;
+
+
+        }
+        public static readonly RoutedEvent ColorChangedEvent = EventManager.
+            RegisterRoutedEvent("ColorChanged",RoutingStrategy.Bubble, 
+            typeof(RoutedPropertyChangedEventHandler<Color>),typeof(UserControl1));
+
+        private static void OnColorChanged(DependencyObject sender,
+            DependencyPropertyChangedEventArgs e)
+        {
+            UserControl1 uscl1 = (UserControl1)sender;
+            Color oldColor = (Color)e.OldValue;
+            Color newColor = (Color)e.NewValue;
+            
+
+            uscl1.OnColorChanged(oldColor,newColor);
+           
+         }
+
+        public event RoutedPropertyChangedEventHandler<Color> ColorChanged
+        {
+            add { AddHandler(ColorChangedEvent, value); }
+            remove { RemoveHandler(ColorChangedEvent, value); }
+        }
+
+        private void OnColorChanged(Color oldValue, Color newValue)
+        {
+            RoutedPropertyChangedEventArgs<Color> args = new 
+                RoutedPropertyChangedEventArgs<Color>(oldValue, newValue);
+            args.RoutedEvent = UserControl1.ColorChangedEvent;
+            RaiseEvent(args);
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
